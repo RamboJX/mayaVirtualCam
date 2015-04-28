@@ -59,6 +59,17 @@ void serv::parseCmdLine()
 	if(cmdWords[0] == "camera")
 	{
 		//set camera keyframe;
+		CameraProperties camParam;
+		camParam.frame = cmdWords[1].asInt();
+		camParam.tranlateX = cmdWords[2].asDouble();
+		camParam.translateY = cmdWords[3].asDouble();
+		camParam.translateZ = cmdWords[4].asDouble();
+		camParam.rotation[0] = cmdWords[5].asDouble();
+		camParam.rotation[1] = cmdWords[6].asDouble();
+		camParam.rotation[2] = cmdWords[7].asDouble();
+		camParam.fov = cmdWords[8].asDouble();
+		cameraController.CameraMove(camParam);
+
 	}
 	else
 	{

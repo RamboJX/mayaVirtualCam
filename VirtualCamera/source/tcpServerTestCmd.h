@@ -9,6 +9,8 @@
 #include <maya/MDagPath.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
+#include "cameraControlCmd.h"
+
 
 #include "dlib-18.14/dlib/sockets.h"
 #include "dlib-18.14/dlib/server.h"
@@ -32,6 +34,7 @@ public:
 	connection * clientCams;
 private:
 	char bufferCmdLine[MAX_COMMAND_LINE];	
+	CameraControl cameraController;
 };
 
 
