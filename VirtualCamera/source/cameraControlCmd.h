@@ -12,16 +12,18 @@
 
 #include <maya/MIOStream.h>
 
+#include <maya/MPxCommand.h>
+#include <maya/MFnPlugin.h>
 #include <maya/MString.h>
+#include <maya/MArgList.h>
 
 #include <maya/MFnCamera.h>
 #include <maya/MGlobal.h>
 #include <maya/M3dView.h>
 #include <maya/MDagPath.h>
-#include "VCDataStructs.h"
-#include <maya/MFnTransform.h>
 
-struct CameraProperties{
+
+struct CamParams{
 	int frame;
 	double tranlateX;
 	double translateY;
@@ -31,13 +33,21 @@ struct CameraProperties{
 
 };
 
-class CameraControl
+
+class cameraControlCmd : public MPxCommand
 {
 public:
-	bool SetCamera();
-	bool CameraMove(CameraProperties camParam);
+	cameraControlCmd() {};
+	virtual			~cameraControlCmd(){ }; 
+	MStatus			doIt( const MArgList& args );
+	
+	static void*	creator(){ return new cameraControlCmd();};
+
 private:
-	MDagPath camera;		//used to store the activity camera node path
+	// This is data that is necessary to redo/undo the command.
+	//
+	MDagPath		camera;
 };
+
 
 #endif

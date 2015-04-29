@@ -2,7 +2,7 @@
 // Copyright (C) 2013 Bubbler Wong 
 // 
 //#include "MeltNode.h"
-#include "cameraControlCmd.h"
+//#include "cameraControlCmd.h"
 #include "cmdDispatch.h"
 //#include "objExport.h"
 #include "tcpServerTestCmd.h"
