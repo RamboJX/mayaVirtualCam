@@ -2,7 +2,7 @@
 // Copyright (C) 2013 Bubbler Wong 
 // 
 //#include "MeltNode.h"
-#include "cameraControlCmd.h"
+//#include "cameraControlCmd.h"
 #include "cmdDispatch.h"
 //#include "objExport.h"
 #include "tcpServerTestCmd.h"
@@ -16,12 +16,6 @@ MStatus initializePlugin( MObject obj )
 	MFnPlugin plugin( obj, "David Gould", "1.0", "Any");
 
 //===register Commands===========
-	stat = plugin.registerCommand( "cameraControl", cameraControlCmd::creator );
-	if ( !stat )
-	{
-		errStr = "registerCommand failed";
-		return stat;
-	}
 	stat = plugin.registerCommand( "augReality", cmdDispatch::creator );
 	if ( !stat )
 	{
@@ -63,13 +57,6 @@ MStatus uninitializePlugin( MObject obj)
 	MFnPlugin plugin( obj );
 
 	//========deregister commands=============
-	stat = plugin.deregisterCommand( "melt" );
-	if ( !stat )
-	{
-		errStr = "deregisterCommand failed";
-		return stat;
-	}
-
 	stat = plugin.deregisterCommand( "augReality" );
 	if ( !stat )
 	{

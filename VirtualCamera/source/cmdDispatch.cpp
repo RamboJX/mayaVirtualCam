@@ -321,17 +321,3 @@ bool cmdDispatch::answerThread(){
 }
 
 
-//
-//bool cmdDispatch::setCamera(MStringArray cmdWords, MDagPath camera)
-//{
-//	//double timeFrame  = cmdWords[TIME_FRAME].asDouble();
-//	//MPoint wsEyeLocation(cmdWords[LOC_X].asDouble(), cmdWords[LOC_Y].asDouble(), cmdWords[LOC_Z].asDouble(), 1.0);
-//	//MVector wsViewDirection(cmdWords[VIEW_DIR_X].asDouble(), cmdWords[VIEW_DIR_Y].asDouble(), cmdWords[VIEW_DIR_Z].asDouble());
-//	//MVector wsUpDirection(cmdWords[UP_DIR_X].asDouble(), cmdWords[UP_DIR_Y].asDouble(), cmdWords[UP_DIR_Z].asDouble());
-//
-//	//double horizFieldOfView = cmdWords[HOV].asDouble();
-//	//double aspectRatio = cmdWords[ASPECTRATIO].asDouble();
-//
-//
-//	return true;
-//}

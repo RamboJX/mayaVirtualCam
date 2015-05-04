@@ -15,7 +15,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\cameraControlCmd.h" />
     <ClInclude Include="source\cmdDispatch.h" />
     <ClInclude Include="source\cmdUtil.h" />
     <ClInclude Include="source\objExport.h" />
@@ -23,7 +22,6 @@
     <ClInclude Include="source\tcpServerTestCmd.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\cameraControlCmd.cpp" />
     <ClCompile Include="source\cmdDispatch.cpp" />
     <ClCompile Include="source\cmdUtil.cpp" />
     <ClCompile Include="source\dlib-18.14\dlib\all\source.cpp" />

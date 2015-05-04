@@ -9,6 +9,14 @@
 #include <maya/MDagPath.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
+#include <maya/M3dView.h>
+#include <maya/MFnCamera.h>
+#include <maya/MFnTransform.h>
+//#include "cameraControlCmd.h"
+#include <maya/MFnAnimCurve.h>
+#include <maya/MQuaternion.h>
+#include <maya/MEulerRotation.h>
+#include <maya/MMatrix.h>
 
 #include "dlib-18.14/dlib/sockets.h"
 #include "dlib-18.14/dlib/server.h"
@@ -22,6 +30,16 @@ using namespace std;
 #define MAX_COMMAND_LINE 255		//define a command line length
 
 
+struct CameraProperties{
+	double frame;
+	double translateX;
+	double translateY;
+	double translateZ;
+	double eulerRotation[3];
+	double fov;
+
+};
+
 class serv : public server
 {
 public:
@@ -30,8 +48,10 @@ public:
 	void parseCmdLine();
 	//store the connection
 	connection * clientCams;
+	void transQuaternionFromLeftToRightHand(double &x, double &y, double &z, double &w);
 private:
 	char bufferCmdLine[MAX_COMMAND_LINE];	
+//	CameraControl cameraController;
 };
 
 
@@ -40,11 +60,15 @@ class tcpServerTestCmd : public MPxCommand
 public:
 	virtual MStatus	doIt ( const MArgList& );
 	static void *creator() { return new tcpServerTestCmd; }
+	static bool CameraMove(CameraProperties camParam);
 
 	static MSyntax newSyntax();
+	static MDagPath camera;
 
 private:
 	static serv mayaTcpServer;
+	
+
 };
 
 #endif

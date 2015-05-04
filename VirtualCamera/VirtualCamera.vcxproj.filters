@@ -23,9 +23,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\cameraControlCmd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\cmdDispatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -43,9 +40,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\cameraControlCmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\cmdDispatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

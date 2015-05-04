@@ -1,58 +1,84 @@
+
 #include "cameraControlCmd.h"
-//#include "MeltNode.h"
-#include <maya/MSelectionList.h>
-#include <maya/MGlobal.h>
-#include <maya/MDagPath.h>
-#include <maya/MFnTransform.h>
-#include <maya/MItSelectionList.h>
-#include <maya/MPlug.h>
-#include <maya/MPlugArray.h>
-#include <maya/MTime.h>
-#include <maya/MAnimControl.h>
-#include <assert.h>
-#include <maya/M3dView.h>
-#include <maya/MIOStream.h>
-#include <maya/MFnCamera.h>
 
 
-MStatus cameraControlCmd::doIt ( const MArgList &args )
-{ 
-	//initial to get the activity camera dag-path
-	MStatus stat = M3dView::active3dView().getCamera(camera);
-
-	if( MS::kSuccess == stat){
-		redoIt();
-	}
-	else{
-		cerr<< "error to getting the camera"<<endl;
-	}
-
-	return stat;
-
-}
-
-MStatus cameraControlCmd::undoIt()
+MStatus cameraControlCmd::doIt( const MArgList& args)
+//
+// Description
+//     Gets the zoomCamera for the current 3d view and calls
+//     the redoIt command to set the focal length.
+//
+// Note
+//     The doit method should collect whatever information is
+//     required to do the task, and store it in local class data.
+//     It should finally call redoIt to make the command happen.
+//
 {
-	return dgMod.undoIt();
-}
+	CamParams params;
+	MStatus status;
+	 for ( int i = 0; i < args.length(); i++ )
+	 {
+        if ( MString( "-tx" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asDouble( ++i, &status );
+            if ( MS::kSuccess == status )
+                params.tranlateX = tmp;
+        }
+        else if ( MString( "-ty" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asDouble( ++i, &status );
+            if ( MS::kSuccess == status )
+				params.translateY = tmp;
+        }
+		else if ( MString( "-tz" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asDouble( ++i, &status );
+            if ( MS::kSuccess == status )
+				params.translateY = tmp;
+        }
+		else if ( MString( "-rx" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asDouble( ++i, &status );
+            if ( MS::kSuccess == status )
+				params.rotation[0] = tmp;
+        }
+				else if ( MString( "-ry" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asDouble( ++i, &status );
+            if ( MS::kSuccess == status )
+				params.rotation[1] = tmp;
+        }
+		else if ( MString( "-rz" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asDouble( ++i, &status );
+            if ( MS::kSuccess == status )
+				params.rotation[2] = tmp;
+        }
+		else if ( MString( "-kf" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asInt( ++i, &status );
+            if ( MS::kSuccess == status )
+				params.frame = tmp;
+        }
+		else if ( MString( "-fov" ) == args.asString( i, &status ) && MS::kSuccess == status )
+        {
+            double tmp = args.asInt( ++i, &status );
+            if ( MS::kSuccess == status )
+				params.fov = tmp;
+        }
+        else
+        {
+            MString msg = "Invalid flag: ";
+            msg += args.asString( i );
+            displayError( msg );
+            return MS::kFailure;
+        }
+	 }
 
-
-MStatus cameraControlCmd::redoIt()
-{
-	MPoint cameraPos(0.0, 0.0, 0.0, 1.0);
-	MVector cameraDir(0.0, 1.0, 0.0);
-	MVector wsUpDir(0.0, 1.0, 0.0);
-	double horizFieldOfView = 100;
-
-
+	// Get the current zoomCamera
+	//
+	MStatus stat = M3dView::active3dView().getCamera( camera );	
 	
-
-	MFnCamera fnCamera(camera);
-	double aspectRaio = fnCamera.aspectRatio();
-
-	fnCamera.set(cameraPos, cameraDir, wsUpDir, horizFieldOfView, aspectRaio);
-
-
-	return dgMod.doIt();
+	//TODO: set camera KeyFrame or do other things
+	return stat;
 }
-

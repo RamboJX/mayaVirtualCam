@@ -1,35 +1,53 @@
+////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2001 David Gould 
-// 
+//  Description:
+//      - control the camera move
+//       
+//
+////////////////////////////////////////////////////////////////////////
+
 #ifndef CAMERACONTROLCMD_H
 #define CAMERACONTROLCMD_H
 
+
+#include <maya/MIOStream.h>
+
 #include <maya/MPxCommand.h>
-#include <maya/MDGModifier.h>
+#include <maya/MFnPlugin.h>
+#include <maya/MString.h>
+#include <maya/MArgList.h>
+
+#include <maya/MFnCamera.h>
+#include <maya/MGlobal.h>
+#include <maya/M3dView.h>
 #include <maya/MDagPath.h>
-#include <maya/MPoint.h>
-#include <maya/MVector.h>
 
-class cameraControlCmd : public MPxCommand 
-{
-public:
-	virtual MStatus	doIt ( const MArgList& );
-	virtual MStatus undoIt();
-	virtual MStatus redoIt();
-	virtual bool isUndoable() const { return true; }
 
-	static void *creator() { return new cameraControlCmd; }
-	static MSyntax newSyntax();
-
-	MStatus setCameraPos(MPoint &cameraPos, MVector &cameraDir, MVector &wsUpDir, double horizFieldOfView, double aspectRatio);
-
-	MStatus getCameraParameters();
-
-private:
-	MDagPath camera;		//used to store the activity camera node path
-	MDGModifier dgMod;
-
+struct CamParams{
+	int frame;
+	double tranlateX;
+	double translateY;
+	double translateZ;
+	double rotation[3];
+	double fov;
 
 };
+
+
+class cameraControlCmd : public MPxCommand
+{
+public:
+	cameraControlCmd() {};
+	virtual			~cameraControlCmd(){ }; 
+	MStatus			doIt( const MArgList& args );
+	
+	static void*	creator(){ return new cameraControlCmd();};
+
+private:
+	// This is data that is necessary to redo/undo the command.
+	//
+	MDagPath		camera;
+};
+
 
 #endif
