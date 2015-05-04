@@ -14,7 +14,9 @@
 #include <maya/MFnTransform.h>
 //#include "cameraControlCmd.h"
 #include <maya/MFnAnimCurve.h>
-
+#include <maya/MQuaternion.h>
+#include <maya/MEulerRotation.h>
+#include <maya/MMatrix.h>
 
 #include "dlib-18.14/dlib/sockets.h"
 #include "dlib-18.14/dlib/server.h"
@@ -33,7 +35,7 @@ struct CameraProperties{
 	double translateX;
 	double translateY;
 	double translateZ;
-	double rotation[3];
+	double eulerRotation[3];
 	double fov;
 
 };
@@ -46,6 +48,7 @@ public:
 	void parseCmdLine();
 	//store the connection
 	connection * clientCams;
+	void transQuaternionFromLeftToRightHand(double &x, double &y, double &z, double &w);
 private:
 	char bufferCmdLine[MAX_COMMAND_LINE];	
 //	CameraControl cameraController;
@@ -60,7 +63,6 @@ public:
 	static bool CameraMove(CameraProperties camParam);
 
 	static MSyntax newSyntax();
-
 	static MDagPath camera;
 
 private:

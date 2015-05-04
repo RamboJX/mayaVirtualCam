@@ -99,20 +99,31 @@ void serv::on_connect(connection& new_connection)
 				//set camera keyframe;
 				CameraProperties camParam;
 				camParam.frame = cmdWords[1].asDouble();
-				camParam.translateX = cmdWords[2].asDouble();
-				camParam.translateY = cmdWords[3].asDouble();
-				camParam.translateZ = cmdWords[4].asDouble();
-				camParam.rotation[0] = cmdWords[5].asDouble();
-				camParam.rotation[1] = cmdWords[6].asDouble();
-				camParam.rotation[2] = cmdWords[7].asDouble();
-				camParam.fov = cmdWords[8].asDouble();
-					
+			
+				camParam.translateX = cmdWords[2].asDouble() ;	//mutiple 100, because in unity3d the unit is meter
+				camParam.translateY = cmdWords[3].asDouble() ;
+				camParam.translateZ = cmdWords[4].asDouble() ;
+				double qx = cmdWords[5].asDouble();
+				double qy = cmdWords[6].asDouble();
+				double qz = cmdWords[7].asDouble();
+				double qw = cmdWords[8].asDouble();
+				camParam.fov = cmdWords[9].asDouble();
+				//transfer this quaternion value to right hand euler
+				
+				transQuaternionFromLeftToRightHand(qx, qy, qz, qw);
+				MQuaternion rotateQuaternion(qx, qy, qz, qw);
+				//this may has some problem
+				MEulerRotation rotateEuler = rotateQuaternion.asEulerRotation();
+				camParam.eulerRotation[0] = rotateEuler.x;
+				camParam.eulerRotation[1] = rotateEuler.y;
+				camParam.eulerRotation[2] = rotateEuler.z;
+	
 				fnAnimCurves_tx.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.translateX );
 				fnAnimCurves_ty.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.translateY );
 				fnAnimCurves_tz.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.translateZ );
-				fnAnimCurves_rx.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.rotation[0] );
-				fnAnimCurves_ry.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.rotation[1] );
-				fnAnimCurves_rz.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.rotation[2] );
+				fnAnimCurves_rx.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.eulerRotation[0] );
+				fnAnimCurves_ry.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.eulerRotation[1] );
+				fnAnimCurves_rz.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.eulerRotation[2] );
 				tcpServerTestCmd::CameraMove(camParam);
 
 			}
@@ -129,6 +140,37 @@ void serv::on_connect(connection& new_connection)
 
 	
 }
+
+
+void serv::transQuaternionFromLeftToRightHand(double &x, double &y, double &z, double &w)
+{
+	MQuaternion leftHandRotation(x, y, z, w);
+	MMatrix leftRotationMatrix =  leftHandRotation.asMatrix();
+	/*
+	double transMatrixSx[4][4] = {-1, 0, 0, 0,
+									0, 1, 0, 0,
+									0, 0, 1, 0,
+									0, 0, 0, 1};
+	double transMatrixSz[4][4] = {1, 0, 0, 0,
+									0, 1, 0, 0,
+									0, 0, -1, 0,
+									0, 0, 0, 1};
+	MMatrix transferMatrixSx(transMatrixSx);
+	MMatrix transferMatrixSz(transMatrixSz);
+	MTransformationMatrix righthandRotationMatrix = transferMatrixSx * leftRotationMatrix * transferMatrixSz;
+	*/
+
+	leftRotationMatrix[0][0] = -leftRotationMatrix[0][0];
+	leftRotationMatrix[1][0] = -leftRotationMatrix[1][0];
+	leftRotationMatrix[3][0] = -leftRotationMatrix[3][0];
+	leftRotationMatrix[2][1] = -leftRotationMatrix[2][1];
+	leftRotationMatrix[2][2] = -leftRotationMatrix[2][2];
+	leftRotationMatrix[2][3] = -leftRotationMatrix[2][3];
+
+	MTransformationMatrix righthandRotationMatrix = leftRotationMatrix;
+	righthandRotationMatrix.getRotationQuaternion(x, y, z, w);
+}
+
 
 //send a command to the connection.
 void serv::sendCmdLineTo(connection& clientCam, string cmdLine)
@@ -180,14 +222,15 @@ bool tcpServerTestCmd::CameraMove(CameraProperties camParam)
 		cout << "camera path :" << fnCamera.fullPathName() << endl;
 		//set this camera's transform
 	
-		MVector transVectorInCentimeters(camParam.translateX * 100.00, camParam.translateY * 100.00, camParam.translateZ * 100.00);
+		MVector transVectorInCentimeters(camParam.translateX, camParam.translateY, camParam.translateZ);
 		camTrans.setTranslation(transVectorInCentimeters, MSpace::kWorld);
 	
 		//set this camera's rotation
-		camTrans.setRotation(camParam.rotation, MTransformationMatrix::RotationOrder::kXYZ);
+		camTrans.setRotation(camParam.eulerRotation, MTransformationMatrix::RotationOrder::kXYZ);
 	}
 	else{
 		cerr << "Error to move the camera" <<endl;
 	}
 	return true;
 }
+
