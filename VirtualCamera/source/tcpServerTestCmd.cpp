@@ -32,6 +32,12 @@ void serv::on_connect(connection& new_connection)
 	MDagPath cameraDagPath;
 	cameraFn.getPath(cameraDagPath);
 	cameraFn.setName(cameraName, &status);
+
+	//get thecamera transform for move
+	MFnTransform fnTransCamera(cameraDagPath);				//the function set of this camera's transfom
+	MObject camLowestTransObj =  cameraDagPath.transform();
+	MFnTransform camTrans(camLowestTransObj);
+	MVector translationVector;
 		
 	// The MFnAnimCurves are the objects that "inject" a value into the correct attribute of 
 	// the camera for each frame.
@@ -100,7 +106,7 @@ void serv::on_connect(connection& new_connection)
 				CameraProperties camParam;
 				camParam.frame = cmdWords[1].asDouble();
 			
-				camParam.translateX = cmdWords[2].asDouble() ;	//mutiple 100, because in unity3d the unit is meter
+				camParam.translateX = -cmdWords[2].asDouble() ;	//flip the translate x
 				camParam.translateY = cmdWords[3].asDouble() ;
 				camParam.translateZ = cmdWords[4].asDouble() ;
 				double qx = cmdWords[5].asDouble();
@@ -124,7 +130,24 @@ void serv::on_connect(connection& new_connection)
 				fnAnimCurves_rx.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.eulerRotation[0] );
 				fnAnimCurves_ry.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.eulerRotation[1] );
 				fnAnimCurves_rz.addKeyframe(MTime(camParam.frame, MTime::uiUnit()), camParam.eulerRotation[2] );
-				tcpServerTestCmd::CameraMove(camParam);
+				
+				/////////move the camera
+				//tcpServerTestCmd::CameraMove(camParam);
+				//MFnCamera fnCamera(camera);						//get the function set of this camera
+				cout << "camera path :" << cameraFn.fullPathName() << endl;
+				//set this camera's transform
+				translationVector[0] = camParam.translateX;
+				translationVector[1] = camParam.translateY;
+				translationVector[2] = camParam.translateZ;
+				//MVector transVectorInCentimeters(camParam.translateX*100, camParam.translateY*100, camParam.translateZ*100);
+
+				//setTranslation (const MVector &vec, MSpace::Space space)
+				status = camTrans.setTranslation(translationVector, MSpace::kTransform);		//send the reference of the first parameter
+				if(status == MStatus::kSuccess){
+					cout <<"this translation is success" << endl;
+				}
+				//set this camera's rotation
+				camTrans.setRotation(camParam.eulerRotation, MTransformationMatrix::RotationOrder::kXYZ);
 
 			}
 			else
@@ -210,6 +233,7 @@ MStatus tcpServerTestCmd::doIt (const MArgList &)
 	return MStatus::kSuccess;
 }
 
+/*
 bool tcpServerTestCmd::CameraMove(CameraProperties camParam)
 {
 
@@ -222,8 +246,11 @@ bool tcpServerTestCmd::CameraMove(CameraProperties camParam)
 		cout << "camera path :" << fnCamera.fullPathName() << endl;
 		//set this camera's transform
 	
-		MVector transVectorInCentimeters(camParam.translateX, camParam.translateY, camParam.translateZ);
-		camTrans.setTranslation(transVectorInCentimeters, MSpace::kWorld);
+		translationVector[0] = camParam.translateX;
+		translationVector[1] = camParam.translateY;
+		translationVector[2] = camParam.translateZ;
+		//MVector transVectorInCentimeters(camParam.translateX*100, camParam.translateY*100, camParam.translateZ*100);
+		camTrans.setTranslation(translationVector, MSpace::kWorld);		//send the reference of the first parameter
 	
 		//set this camera's rotation
 		camTrans.setRotation(camParam.eulerRotation, MTransformationMatrix::RotationOrder::kXYZ);
@@ -234,3 +261,4 @@ bool tcpServerTestCmd::CameraMove(CameraProperties camParam)
 	return true;
 }
 
+*/

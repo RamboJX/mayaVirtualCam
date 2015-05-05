@@ -60,12 +60,13 @@ class tcpServerTestCmd : public MPxCommand
 public:
 	virtual MStatus	doIt ( const MArgList& );
 	static void *creator() { return new tcpServerTestCmd; }
-	static bool CameraMove(CameraProperties camParam);
+	//bool CameraMove(CameraProperties camParam);
 
 	static MSyntax newSyntax();
 	static MDagPath camera;
-
+	
 private:
+	MVector translationVector;
 	static serv mayaTcpServer;
 	
 
